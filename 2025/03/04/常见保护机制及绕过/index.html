@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Wi1lings">
+
+
+
+
+
+<title>常见保护机制及绕过 | Wi1lings</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Wi1lings&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Wi1lings&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">常见保护机制及绕过</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Wi1lings</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 4, 2025&nbsp;&nbsp;20:01:38</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="常见保护机制及绕过"><a href="#常见保护机制及绕过" class="headerlink" title="常见保护机制及绕过"></a>常见保护机制及绕过</h1><h2 id="Canary-栈保护"><a href="#Canary-栈保护" class="headerlink" title="Canary(栈保护)"></a>Canary(栈保护)</h2><p>​         栈溢出保护是一种缓冲区溢出攻击缓解手段，当函数存在缓冲区溢出攻击漏洞时，攻击者可以覆盖栈上的返回地址来让shellcode能够得到执行。用Canary是否变化来检测，其中Canary found表示开启。</p>
+<ul>
+<li><strong>原理</strong></li>
+</ul>
+<p>​        函数开始执行的时候会先往栈里插入cookie信息，当函数真正返回的时候会验证cookie信息是否合法，如果不合法就停止程序运行。攻击者在覆盖返回地址的时候往往也会将cookie信息给覆盖掉，导致栈保护检查失败而阻止shellcode的执行。在Linux中我们将cookie信息称为canary。</p>
+<ul>
+<li>开启&#x2F;关闭方式</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c						// 默认情况下，不开启Canary保护</span><br><span class="line">gcc -fno-stack-protector -o test test.c  //禁用栈保护</span><br><span class="line">gcc -fstack-protector -o test test.c   //启用堆栈保护，不过只为局部变量中含有 char 数组的函数插入保护代码</span><br><span class="line">gcc -fstack-protector-all -o test test.c //启用堆栈保护，为所有函数插入保护代码</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<ul>
+<li><p>绕过方法</p>
+<p>通过改写指针与局部变量、<code>leak canary</code>、<code>overwrite canary</code>的方法来绕过。</p>
+<ol>
+<li><p>覆盖截断字符获取canary[^1]</p>
+<blockquote>
+<p>canary设计其低字节为\x00，本意是阻止被read、write函数等直接读出来。通过栈溢出将低位的\x00覆写，就可以读出canary</p>
+</blockquote>
+</li>
+<li><p>格式化字符串泄露打印canary[^2]</p>
+</li>
+<li><p>若存在fork()函数，当程序进入到子进程的时候，其canary的值和父进程中canary的值一样，可以通过栈溢出覆盖逐位爆破canary[^3]</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/news/12118?time__1311=eqUxu7ex9DBDgDfx05DIOxiTPYwNrYrGoD&u_atoken=ab551865b9561ff247b060595c464320&u_asig=ac11000117402223864293694e0044"><code>SSP Leak(Stack Smashing Protect Leak )</code></a>，Canary检测失败时会触发stack_chk_fial函数，输出一段报错，报错会输出文件名，只要覆盖文件名指针，也就是_libc_argv[0]，可以实现任意读，要是flag文件被打开，存储在栈中的话可以利用。[^4]</p>
+</li>
+<li><p>劫持<code>stack_chk_fail</code>函数,<code>stack_chk_fail</code>函数是一个普通的延迟绑定函数，可以通过修改GOT表劫持这个函数。利用方式就是通过格式化字符串漏洞来修改GOT表中的值。通过格式化字符串漏洞来篡改GOT表中<code>stack_chk_fail</code>存储的地址，将它的地址修改成system(“&#x2F;bin&#x2F;sh”)函数地址，然后通过栈溢出来覆盖canary，故意触发<code>__stack_chk_fail</code>函数的执行，相当于执行了system(“&#x2F;bin&#x2F;sh”)函数，从而<code>getshell</code>[^5]</p>
+</li>
+<li><p>TLS[^6] bypass canary：在glibc中，TLS结构的实现中包括了stack_guard，即被称作canary的随机数，用来防止栈溢出。<br>它的工作模式是：当一个函数被调用，canary从tcbhead_t.stack_guard被放到栈上。在函数调用结束的时候，栈上的值被和tcbhead_t.stack_guard比较，如果两个值是不相等的，程序将会返回error并且终止。研究表明，glibc在TLS实现上存在问题，线程在pthread_create的帮助下创建，然后需要给这个新线程选择TLS。从TLS到pthread_create的函数参数传递栈帧的距离小于一页。<strong>现在攻击者将不需要得到leak canary的值，而是直接栈溢出足够多的数据来复写TLS中的tcbhead_t.stack_guard的值，从而bypass canary</strong>。</p>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="FORTIFY"><a href="#FORTIFY" class="headerlink" title="FORTIFY"></a>FORTIFY</h2><p>​                fority其实非常轻微的检查，用于检查是否存在缓冲区溢出的错误。适用情形是程序采用大量的字符串或者内存操作函数，如<code>memcpy，memset，stpcpy，strcpy，strncpy，strcat，strncat，sprintf，snprintf，vsprintf，vsnprintf，gets</code>以及宽字符的变体。</p>
+<ul>
+<li><p>原理</p>
+<p>​         Fortify技术是GCC编译源码时判断程序的哪些buffer会存在可能的溢出，在buffer大小已知的情况下，GCC会把<code>strcpy</code>、<code>memcpy</code>、<code>memset</code>等函数自动替换成相应的<code>__strcpy_chk</code>(<code>dst</code>, <code>src</code>, <code>dstlen</code>)等函数，达到防止缓冲区溢出的作用。</p>
+<p>FORTIFY_SOURCE机制<strong>对格式化字符串有两个限制</strong>：</p>
+<ol>
+<li>包含%n的格式化字符串不能位于程序内存中的可写地址；</li>
+<li>当使用位置参数时，必须使用范围内的所有参数。例如要使用%4$x，则必须同时使用1、2、3。</li>
+</ol>
+</li>
+<li><p>开启&#x2F;关闭方式</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c							// 默认情况下，不会开这个检查</span><br><span class="line">gcc -D_FORTIFY_SOURCE=1 -o test test.c		// 较弱的检查</span><br><span class="line">gcc -D_FORTIFY_SOURCE=2 -o test test.c		// 较强的检查</span><br></pre></td></tr></table></figure>
+
+<p>GCC中<code>-D_FORTIFY_SOURCE=2</code>是默认开启的，但是只有开启O2或以上优化的时候，这个选项才会被真正激活。</p>
+<p>如果指定<code>-D_FORTIFY_SOURCE=1</code>，那同样也要开启O1或以上优化，这个选项才会被真正激活。</p>
+<p>可以使用<code>-U_FORTIFY_SOURCE</code>或者<code>-D_FORTIFY_SOURCE=0</code>来禁用。</p>
+<p>如果开启了<code>-D_FORTIFY_SOURCE=2</code>，那么调用<code>__printf_chk</code>函数的时候会检查format string中是否存在<code>%n</code>，如果存在<code>%n</code> 而且format string是在一个可写的segment中的（不是在read-only内存段中），那么程序会报错并终止。如果是开启<code>-D_FORTIFY_SOURCE=1</code>，那么就不会报错</p>
+<p><code>gcc -D_FORTIFY_SOURCE=1</code> 仅仅只会在编译时进行检查 (特别像某些头文件 <code>#include &lt;string.h&gt;</code>)</p>
+<p><code>gcc -D_FORTIFY_SOURCE=2</code> 程序执行时也会有检查 (如果检查到缓冲区溢出，就终止程序)</p>
+</li>
+</ul>
+<h2 id="NX-DEP-堆栈代码执行保护"><a href="#NX-DEP-堆栈代码执行保护" class="headerlink" title="NX(DEP)堆栈代码执行保护"></a>NX(DEP)堆栈代码执行保护</h2><ul>
+<li>原理</li>
+</ul>
+<p>​         NX即No-eXecute（不可执行）的意思，NX（DEP）的基本原理是将数据所在内存页（堆、栈、.bss段等）标识为不可执行，当程序溢出成功转入shellcode时，程序会尝试在数据页面上执行指令，此时CPU就会抛出异常，而不是去执行恶意指令。</p>
+<ul>
+<li><p>开启&#x2F;关闭方式</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c					// 默认情况下，开启NX保护</span><br><span class="line">gcc -z execstack -o test test.c		// 禁用NX保护</span><br><span class="line">gcc -z noexecstack -o test test.c	// 开启NX保护</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>绕过方法</p>
+<ol>
+<li>使用ROP绕过，如ret2text[^7]、ret2libc、ret2strcpy、ret2gets、ret2syscall等</li>
+<li>如果程序为静态编译，可以尝试利用mprotect函数修改特定段的执行权限，从而达到执行恶意指令的目的</li>
+</ol>
+</li>
+</ul>
+<h2 id="PIE-ALSR"><a href="#PIE-ALSR" class="headerlink" title="PIE(ALSR)"></a>PIE(ALSR)</h2><p>一般情况下NX（Windows平台上称其为DEP）和地址空间分布随机化（ASLR）会同时工作。</p>
+<p>（1）ASLR（Address Space Layout Randomization）：地址随机化，通常<strong>用来防御ret2libc攻击</strong>。</p>
+<p>（2）PIE（Position-Independent Executables）：位置无关的可执行文件，和Windows下的ASLR机制类似，PIE enabled表示程序开启地址随机化选、意味着程序每次运行的时候地址都会变化。主要是为了解决二进制本身地址已知的问题，可<strong>用来防御ret2elf和其他已知地址读写问题</strong>。</p>
+<ul>
+<li><p>原理</p>
+<p>内存地址随机化机制（address space layout randomization)，有以下三种情况：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0 - 表示关闭进程地址空间随机化。 </span><br><span class="line">1 - 表示将mmap的基址，stack和vdso页面随机化。 </span><br><span class="line">2 - 表示在1的基础上增加栈（heap）的随机化。</span><br></pre></td></tr></table></figure>
+
+<p>可以防范基于ret2libc方式的针对DEP的攻击。ASLR和DEP配合使用，能有效阻止攻击者在堆栈上运行恶意代码。</p>
+<p> <strong>Built as PIE</strong>：位置独立的可执行区域。这样使得在利用缓冲溢出和移动操作系统中存在的其他内存崩溃缺陷时采用面向返回的编程方法变得难得多。</p>
+</li>
+<li><p>开启&#x2F;关闭方法</p>
+<ul>
+<li>ASLR</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo -s echo 0 &gt; /proc/sys/kernel/randomize_va_space  //关闭ASLR</span><br><span class="line">sudo -s echo 1 &gt; /proc/sys/kernel/randomize_va_space</span><br><span class="line">sudo -s echo 2 &gt; /proc/sys/kernel/randomize_va_space</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>PIE</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c				// 默认情况下，不开启PIE</span><br><span class="line">gcc -fpie -pie -o test test.c		// 开启PIE，此时强度为1</span><br><span class="line">gcc -fPIE -pie -o test test.c		// 开启PIE，此时为最高强度2</span><br><span class="line">gcc -fpic -o test test.c		// 开启PIC，此时强度为1，不会开启PIE</span><br><span class="line">gcc -fPIC -o test test.c		// 开启PIC，此时为最高强度2，不会开启PIE</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用-fPIE编译的对象就能通过连接器得到位置无关可执行程序。</li>
+<li>-fpie和-fPIE选项和fpic及fPIC很相似，但不同的是，除了生成为位置无关代码外，还能假定代码是属于本程序。</li>
+</ul>
+</li>
+<li><p>绕过方法</p>
+<ol>
+<li><p><strong>Partial overwrite</strong>[^8]：就是写入部分的数据，来控制程序的执行流程。</p>
+<blockquote>
+<p>因为程序运行起来的时候开启了pie和aslr，无法获取程序的准确地址，但是虽然前面的地址是不知道的，但是一个内存分页的大小为<code>0x1000</code>，这基本上确定了，偏移地址只能在<code>0~999</code>之间，一般情况下，返回地址都会在一个内存分页上，所以我们覆盖返回地址的后三位，从而执行<code>backdoor</code>函数</p>
+<p>但是我们在覆盖的时候，写入三个十六进制的情况是很少的，一个字节为<code>8bit</code>，一个字节由四位十六进制组成，三位十六进制是<code>12bit</code>，因为我们平常写入都是一次性写入一个字节(8bit)，如果写入两个字节，就会有一个十六进制位是不确定的，这时就需要运气才能成功执行<code>backdoor</code>函数，但是我们可以使用爆破的方式，多次运行程序，总有一个会成功</p>
+</blockquote>
+</li>
+<li><p><strong>泄露地址绕过</strong>：pie只会影响程序加载的基地址，如果程序中某个函数，泄露了程序在内存中的地址，我们可以将<code>泄露的地址 - 泄露地址偏移</code>得到基地址，从而可以使用<code>基地址 + 偏移</code>地址定位到程序中的任意位置，这个时候我们的<code>gadget</code>就可以使用了，就可以使用常规的<code>ROPchain</code>获取shell</p>
+</li>
+<li><p><strong>NOP喷射</strong>（DEP没开的情况下，创建一大块NOP+shellcode，Heap Spray是在shellcode的前面加上大量的slide code（滑板指令），组成一个注入代码段。然后向系统申请大量内存，并且反复用注入代码段来填充。这样就使得进程的地址空间被大量的注入代码所占据。然后结合其他的漏洞攻击技术控制程序流，使得程序执行到堆上，最终将导致shellcode的执行。统slide code（滑板指令）一般是NOP指令，譬如：0x0C（0x0C0C代表的x86指令是OR AL 0x0C），0x0D等等，不影响程序的执行的。）</p>
+</li>
+<li><p><strong>暴力</strong>（如果漏洞不会造成程序崩溃，可以暴力测试256种模块基地址来测试，只到有满足的）最LOW</p>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="RELRO-重定向只读"><a href="#RELRO-重定向只读" class="headerlink" title="RELRO(重定向只读)"></a>RELRO(重定向只读)</h2><p>​        在Linux系统安全领域数据可以写的存储区就会是攻击的目标，尤其是存储函数指针的区域。 所以在安全防护的角度来说尽量减少可写的存储区域对安全会有极大的好处。</p>
+<ul>
+<li><p>原理</p>
+<p>GCC, GNU linker以及Glibc-dynamic linker一起配合实现了一种叫做relro的技术: read only relocation。大概实现就是由linker指定binary的一块经过dynamic linker处理过 relocation之后的区域为只读.<strong>用来防御hijack GOT攻击。</strong></p>
+<p> 设置符号重定向表格为只读或在程序启动时就解析并绑定所有动态符号，<strong>从而减少对GOT（Global Offset Table）攻击。</strong>RELRO为” Partial RELRO”，说明我们对GOT表具有写权限。</p>
+</li>
+<li><p>开启&#x2F;关闭方法</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gcc -o test test.c						// 默认情况下，是Partial RELRO</span><br><span class="line">gcc -z norelro -o test test.c			// 关闭，即No RELRO</span><br><span class="line">gcc -z lazy -o test test.c				// 部分开启，即Partial RELRO</span><br><span class="line">gcc -z now -o test test.c				// 全部开启，即</span><br></pre></td></tr></table></figure>
+
+<p> RELRO有Partial RELRO和FULL RELRO两个选项，如果开启FULL RELRO，意味着无法修改GOT表；如果为Partial RELRO，说明对GOT表具有写权限。在Linux下默认开启状态。</p>
+<ul>
+<li>Partial RELRO：重定位表格只读，重定位项可读写；</li>
+<li>FULL RELRO：重定位表格和重定位项均为只读（但会导致符号懒加载失效，同时会带来启动时的效率下降）；</li>
+</ul>
+</li>
+<li><p>绕过方法</p>
+<p>可通过ROP绕过</p>
+</li>
+</ul>
+<p>[^1]: 见ctfshow pwn115<br>[^2]: 见ctfshow pwn116<br>[^3]: 见ctfshow pwn119<br>[^4]: 见ctfshow pwn117<br>[^5]: 见ctfshow pwn118<br>[^6]: 线程局部存储（Thread Local Storage）是一种机制，通过该机制分配变量，以便每一个现存的线程都有一个变量实例。 它主要是为了避免多个线程同时访存同一全局变量或者静态变量时所导致的冲突，尤其是多个线程同时需要修改这一变量时。为了解决这个问题，我们可以通过TLS机制，为每一个使用该全局变量的线程都提供一个变量值的副本，每一个线程均可以独立地改变自己的副本，而不会和其它线程的副本冲突。从线程的角度看，就好像每一个线程都完全拥有该变量。而从全局变量的角度上来看，就好像一个全局变量被克隆成了多份副本，而每一份副本都可以被一个线程独立地改变。<br>[^7]: 见ctfshow pwn111<br>[^8]: 见ctfshow pwn128</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Wi1lings</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://example.com/2025/03/04/%E5%B8%B8%E8%A7%81%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6%E5%8F%8A%E7%BB%95%E8%BF%87/">http://example.com/2025/03/04/%E5%B8%B8%E8%A7%81%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6%E5%8F%8A%E7%BB%95%E8%BF%87/</a></span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/pwn%E5%9F%BA%E7%A1%80/"># pwn基础</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2025/03/04/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">pwn环境搭建</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Wi1lings | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
